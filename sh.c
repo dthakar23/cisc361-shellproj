@@ -22,6 +22,8 @@ int sh( int argc, char **argv, char **envp )
   char *homedir;
   struct pathelement *pathlist;
 
+  char buffer[MAXBUFFER];
+
   uid = getuid();
   password_entry = getpwuid(uid);               /* get passwd info */
   homedir = password_entry->pw_dir;		/* Home directory to start
@@ -42,8 +44,34 @@ int sh( int argc, char **argv, char **envp )
   while ( go )
   {
     /* print your prompt */
+    printf("\n%s [%s]> ", prompt, pwd);
+
+    if(fgets(buffer, MAXBUFFER, stdin)!=NULL){
+        int ln = strlen(buffer);
+        if(buffer[ln-1]== '\n'){
+            buffer[ln-1] = 0;
+        }
+        strcpy(commandline, buffer);
+    }
+
+    int a=0;
+    char *checker = strtok(commandline, " ");
+    command = checker;
+    memset(args, '\0', MAXARGS*sizeof(char*));
+    while(checker){
+        args[a] = checker;
+        checker = strtok(NULL, " ");
+        a++;
+    }
 
     /* get command line and process */
+    if (strcmp(command, "which") == 0){ //checking to see if which is the command typed in
+        for(int a=1; args[a] != NULL; a++){
+            commandpath = which(args[a], pathlist); //runs which function defined in this file
+            printf("\n%s", commandpath);
+            //free(commandpath); //freeing up memory for valgrind
+        }
+    }
 
     /* check for each built in command and implement */
 
@@ -63,6 +91,32 @@ char *which(char *command, struct pathelement *pathlist )
 {
    /* loop through pathlist until finding command and return it.  Return
    NULL when not found. */
+
+    char buffer[MAXBUFFER];
+    int found;
+    found = 0;
+
+    while (pathlist)
+    {
+        sprintf(buffer, MAXBUFFER, "%s/%s", pathlist->element, command);
+
+        if (access(buffer, X_OK) == 0)
+        {
+            found = 1;
+            break;
+        }
+        pathlist = pathlist -> next;
+        if (found)
+        {
+           int ln = strlen(buffer);
+           char *space = calloc(ln + 1, sizeof(char));
+           strncpy(space, buffer, ln);
+           return space;
+        }
+        else {
+            return (char *) NULL;
+        }
+   }
 
 } /* which() */
 
