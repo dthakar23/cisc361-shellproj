@@ -239,7 +239,24 @@ char *which(char *command, struct pathelement *pathlist)
 char *where(char *command, struct pathelement *pathlist)
 {
     /* similarly loop through finding all locations of command */
-    
+    char buffer[MAXBUFFER];
+    int check;
+    check = 0;
+
+    while (pathlist)
+    {
+        sprintf(buffer, "%s/%s", pathlist->element, command);
+
+        if (access(buffer, X_OK) == 0)
+        {
+            int ln = strlen(buffer);
+            char *space = calloc(ln + 1, sizeof(char));
+            strncpy(space, buffer, ln);
+            //return space;
+        }
+        pathlist = pathlist->next;
+    }
+    return (char *)NULL;
 } /* where() */
 
 void list(char *dir)
