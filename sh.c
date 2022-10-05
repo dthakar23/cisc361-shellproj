@@ -75,6 +75,7 @@ int sh(int argc, char **argv, char **envp)
             if (strcmp(command, "exit") == 0)
             {
                 printf("\nExecuting built-in %s", command);
+                //free pathlist and pathlist->element
                 exit(0);
                 break;
             }
@@ -183,7 +184,7 @@ int sh(int argc, char **argv, char **envp)
             else if (strcmp(command, "printenv") == 0)
             {
                 printf("\nExecuting built-in %s", command);
-                printenv()
+                //printenv()
 
             }
             /* check for built in "setenv" command and implement */
@@ -221,27 +222,18 @@ char *which(char *command, struct pathelement *pathlist)
 
     while (pathlist)
     {
-        sprintf(buffer, MAXBUFFER, "%s/%s", pathlist->element, command);
+        sprintf(buffer, "%s/%s", pathlist->element, command);
 
         if (access(buffer, X_OK) == 0)
-        {
-            check = 1;
-            break;
-        }
-        pathlist = pathlist->next;
-        if (check)
         {
             int ln = strlen(buffer);
             char *space = calloc(ln + 1, sizeof(char));
             strncpy(space, buffer, ln);
             return space;
         }
-        else
-        {
-            return (char *)NULL;
-        }
+        pathlist = pathlist->next;
     }
-
+    return (char *)NULL;
 } /* which() */
 
 char *where(char *command, struct pathelement *pathlist)
