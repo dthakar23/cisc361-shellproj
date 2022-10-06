@@ -24,6 +24,7 @@ int sh(int argc, char **argv, char **envp)
     struct pathelement *pathlist;
 
     char buffer[MAXBUFFER];
+    char pBuffer[PROMPTMAX];
 
     uid = getuid();
     password_entry = getpwuid(uid);   /* get passwd info */
@@ -177,7 +178,20 @@ int sh(int argc, char **argv, char **envp)
             else if (strcmp(command, "prompt") == 0)
             {
                 printf("\nExecuting built-in %s", command);
-
+                if (args[1] == NULL) {
+                    printf("\nType your prefix: ");
+                    if (fgets(pBuffer, PROMPTMAX, stdin) != NULL) {
+                        int len = strlen(pBuffer);
+                        if (pBuffer[len-1] == '\n') {
+                            pBuffer[len-1] = 0;
+                        }
+                        strtok(pBuffer, " ");
+                        strcpy(prompt, pBuffer);
+                    }
+                }
+                else {
+                    strcpy(prompt, args[1]);
+                }
             }
             /* check for built in "printenv" command and implement */
             else if (strcmp(command, "printenv") == 0)
