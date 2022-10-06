@@ -14,7 +14,7 @@
 
 int sh(int argc, char **argv, char **envp)
 {
-    extern char** envi;
+    extern char** environ;
     char *prompt = calloc(PROMPTMAX, sizeof(char));
     char *commandline = calloc(MAX_CANON, sizeof(char));
     char *command, *arg, *commandpath, *p, *pwd, *owd;
@@ -199,8 +199,8 @@ int sh(int argc, char **argv, char **envp)
             {
                 printf("\nExecuting built-in %s", command);
                 if (args[1]==NULL){
-                    for (int i=0; envi[i] !=NULL; i++){
-                        printf("%s\n", envi[i]);
+                    for (int i=0; environ[i] !=NULL; i++){
+                        printf("%s\n", environ[i]);
                     }
                 } else {
                     printf("%s\n", getenv(args[1]));
