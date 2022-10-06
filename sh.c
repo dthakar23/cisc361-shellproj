@@ -75,7 +75,7 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "exit" command and implement */
             if (strcmp(command, "exit") == 0)
             {
-                printf("\nExecuting built-in %s", command);
+                printf("\nExecuting built-in %s\n", command);
                 //free pathlist and pathlist->element
                 exit(0);
                 break;
@@ -192,27 +192,27 @@ int sh(int argc, char **argv, char **envp)
                 printf("\nExecuting built-in %s", command);
 
             }
-            /* check for "./ or /" absolute path and implement */ //use access(2) to check
-            else if ((strcmp(command, "/")==0) || (strcmp(command, "./"))==0 || (strcmp(command, "../"))){
-                if (access(command, X_OK) == -1)
-                {
-                    printf("\nUnable to read command: %s", command);
-                    perror("Error ");
-                }
-                else
-                {
-                    printf("\nExecuted path %s\n", command);
-                    //how to get path to print??? and run an executeable
-                }
-            }
+        //    /*  /* check for "./ or /" absolute path and implement */ //use access(2) to check
+        //     else if ((strcmp(command, "/")==0) || (strcmp(command, "./"))==0 || (strcmp(command, "../"))){
+        //         if (access(command, X_OK) == -1)
+        //         {
+        //             printf("\nUnable to read command: %s", command);
+        //             perror("Error ");
+        //         }
+        //         else
+        //         {
+        //             printf("\nExecuted path %s\n", command);
+        //             //how to get path to print??? and run an executeable
+        //         }
+        //     } */
 
             /* check for "*" "?" wild card */
-            else if ((strchr(command, "*")!=NULL) || (strchr(command, "?")!=NULL)){ //checks for first occurence of wildcard characters
+            else if ((strchr(command, '*')!=NULL) || (strchr(command, '?')!=NULL)){ //checks for first occurence of wildcard characters
                 wordexp_t w; //pulled from wordexp.h library
                 char **wildcard;
                 int ind;
                 wordexp(arg, &w, 0);
-                wild = a.we_wordv;
+                wildcard = w.we_wordv;
                 for (ind = sizeof(args); ind < w.we_wordc; ind++)
                 {
                     printf("%s\n", wildcard[ind]);
@@ -221,13 +221,15 @@ int sh(int argc, char **argv, char **envp)
             }
 
             /*  else  program to exec */
+            else
             {
                 /* find it */
                 /* do fork(), execve() and waitpid() */
 
                 /* else */
-                /* fprintf(stderr, "%s: Command not found.\n", args[0]); */
+                fprintf(stderr, "%s: Command not found.\n", args[0]);
             }
+
         }
         //return 0;
     }
