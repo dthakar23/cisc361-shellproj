@@ -102,30 +102,29 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "cd" command and implement */ // how to do this one???
             else if (strcmp(command, "cd") == 0)
             {
-                if (args[1] != NULL && args[2] == NULL)
-                {
-                    if (chdir(args[1]) == -1)
-                    {
-                        perror("Too many arguments ");
+                if (args[1] == NULL) {
+                    strcpy(owd, pwd);
+                    strcpy(pwd, homedir);
+                    chdir(pwd);
+                }
+                else if (strcmp(args[1], "-") == 0) {
+                    char *temp = pwd;
+                    pwd = owd;
+                    owd = pwd;
+                    //pwd = getcwd(NULL, PATH_MAX+1);
+
+                    //strcpy(pwd, owd);
+                    //strcpy(owd, temp);
+                    chdir(pwd);
+                }
+                else if (args[1] != NULL && args[2] == NULL) {
+                    if (chdir(args[1]) == -1) {
+                        perror("Error");
                     }
-                    else
-                    {
+                    else {
                         memset(owd, '\0', strlen(owd));
                         memcpy(owd, pwd, strlen(pwd));
-                        getcwd(pwd, PATH_MAX + 1);
-                    }
-                } else {
-                    printf("\nExecuting built-in %s", command); //only prints executing cd if there aren't errors
-                    if (args[1] == NULL){
-                        strcpy(owd, pwd);
-                        strcpy(pwd, homedir);
-                        chdir(pwd);
-                    }
-                    else if (strcmp(args[1], "-") == 0){
-                        p = pwd;
-                        pwd = owd;
-                        owd = p;
-                        chdir(pwd);
+                        getcwd(pwd, PATH_MAX+1);
                     }
                 }
             }
@@ -276,6 +275,7 @@ char *where(char *command, struct pathelement *pathlist)
             int ln = strlen(buffer);
             char *space = calloc(ln + 1, sizeof(char));
             strncpy(space, buffer, ln);
+            printf("\n%s", buffer);
             //return space;
         }
         pathlist = pathlist->next;
