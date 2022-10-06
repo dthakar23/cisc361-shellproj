@@ -14,6 +14,7 @@
 
 int sh(int argc, char **argv, char **envp)
 {
+    extern char** envi;
     char *prompt = calloc(PROMPTMAX, sizeof(char));
     char *commandline = calloc(MAX_CANON, sizeof(char));
     char *command, *arg, *commandpath, *p, *pwd, *owd;
@@ -197,8 +198,13 @@ int sh(int argc, char **argv, char **envp)
             else if (strcmp(command, "printenv") == 0)
             {
                 printf("\nExecuting built-in %s", command);
-                //printenv()
-
+                if (args[1]==NULL){
+                    for (int i=0; envi[i] !=NULL; i++){
+                        printf("%s\n", envi[i]);
+                    }
+                } else {
+                    printf("%s\n", getenv(args[1]));
+                }
             }
             /* check for built in "setenv" command and implement */
             else if (strcmp(command, "setenv") == 0)
