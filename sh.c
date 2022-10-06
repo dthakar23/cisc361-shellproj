@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <dirent.h>
+#include <wordexp.h> //keep?
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
@@ -163,7 +164,6 @@ int sh(int argc, char **argv, char **envp)
             else if (strcmp(command, "pid") == 0)
             {
                 printf("\nExecuting built-in %s", command);
-                // fprintf(stderr, "pid: ignoring non-option arguments.\n");
                 printf("%d\n", getpid());
             }
             /* check for built in "kill" command and implement */
@@ -193,8 +193,32 @@ int sh(int argc, char **argv, char **envp)
 
             }
             /* check for "./ or /" absolute path and implement */ //use access(2) to check
+            else if ((strcmp(command, "/")==0) || (strcmp(command, "./"))==0 || (strcmp(command, "../"))){
+                if (access(command, X_OK) == -1)
+                {
+                    printf("\nUnable to read command: %s", command);
+                    perror("Error ");
+                }
+                else
+                {
+                    printf("\nExecuted path %s\n", command);
+                    //how to get path to print??? and run an executeable
+                }
+            }
 
-            /* check for "*" wild card
+            /* check for "*" "?" wild card */
+            else if ((strchr(command, "*")!=NULL) || (strchr(command, "?")!=NULL)){ //checks for first occurence of wildcard characters
+                wordexp_t w; //pulled from wordexp.h library
+                char **wildcard;
+                int ind;
+                wordexp(arg, &w, 0);
+                wild = a.we_wordv;
+                for (ind = sizeof(args); ind < w.we_wordc; ind++)
+                {
+                    printf("%s\n", wildcard[ind]);
+                }
+                //wordfree(&w);
+            }
 
             /*  else  program to exec */
             {
