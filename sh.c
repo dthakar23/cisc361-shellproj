@@ -210,6 +210,34 @@ int sh(int argc, char **argv, char **envp)
             else if (strcmp(command, "setenv") == 0)
             {
                 printf("\nExecuting built-in %s", command);
+                if (args[1] == NULL) {
+                    printenv(environ);
+                }
+                else if (args[2] == NULL) {
+                    if (strcmp(args[1],"PATH") == 0 || strcmp(args[1],"HOME") == 0) {
+                        printf("\nWARNING: Take special care when PATH and HOME are changed");
+                    }
+                    else if (setenv(args[1], "", 1) == -1) {
+                        perror("Error!");
+                    }
+                }
+                else if (args[3] == NULL) {
+                    if (setenv(args[1], args[2], 1) == -1) {
+                        perror("Error!");
+                    }
+                    else {
+                        if (strcmp(args[1], "PATH") == 0) {
+                            //deletepath(&pathlist);
+                            pathlist = NULL;
+                        }
+                        else if (strcmp(args[1], "HOME") == 0) {
+                            homedir = args[2];
+                        }
+                    }
+                }
+                else {
+                    printf("Invalid: Too many arguments");
+                }
 
             }
         //    /*  /* check for "./ or /" absolute path and implement */ //use access(2) to check
