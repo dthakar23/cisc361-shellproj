@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <dirent.h>
-#include <wordexp.h> //keep?
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
@@ -269,16 +268,7 @@ int sh(int argc, char **argv, char **envp)
 
             /* check for "*" "?" wild card */
             else if ((strchr(command, '*')!=NULL) || (strchr(command, '?')!=NULL)){ //checks for first occurence of wildcard characters
-                wordexp_t w; //pulled from wordexp.h library
-                char **wildcard;
-                int ind;
-                wordexp(arg, &w, 0);
-                wildcard = w.we_wordv;
-                for (ind = sizeof(args); ind < w.we_wordc; ind++)
-                {
-                    printf("%s\n", wildcard[ind]);
-                }
-                //wordfree(&w);
+            
             }
 
             /*  else  program to exec */
