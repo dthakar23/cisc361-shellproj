@@ -82,26 +82,28 @@ int sh(int argc, char **argv, char **envp)
                 exit(0);
                 break;
             }
+
             /* check for built in "which" command and implement */
             else if (strcmp(command, "which") == 0)
             {
-                printf("\nExecuting built-in %s \n", command);
-
+                printf("\nExecuting built-in [%s] \n", command);
                 for (int a = 1; args[a] != NULL; a++)
                 {
                     commandpath = which(args[a], pathlist); // runs which function defined in this file
                     printf("\n%s", commandpath);
                 }
             }
+
             /* check for built in "where" command and implement */
             else if (strcmp(command, "where") == 0)
             {
-                printf("\nExecuting built-in %s \n", command);
+                printf("\nExecuting built-in [%s] \n", command);
                 for (int a = 1; args[a] != NULL; a++)
                 {
                     commandpath = where(args[a], pathlist);
                 }
             }
+
             /* check for built in "cd" command and implement */ // how to do this one???
             else if (strcmp(command, "cd") == 0)
             {
@@ -131,18 +133,18 @@ int sh(int argc, char **argv, char **envp)
                     }
                 }
             }
-                /* check for built in "pwd" command and implement */
+
+            /* check for built in "pwd" command and implement */
             else if (strcmp(command, "pwd") == 0)
             {
-            printf("\nExecuting built-in %s \n", command);
-
+                printf("\nExecuting built-in [%s] \n", command);
                 printf("\npwd: %s", pwd);
             }
+
             /* check for built in "list" command and implement */
             else if (strcmp(command, "list") == 0) //check this
             {
-                printf("\nExecuting built-in %s \n", command);
-
+                printf("\nExecuting built-in [%s] \n", command);
                 if (args[1] == NULL)
                 { // 0 holds command
                     list(pwd);
@@ -165,18 +167,18 @@ int sh(int argc, char **argv, char **envp)
                     }
                 }
             }
+
             /* check for built in "pid" command and implement */
             else if (strcmp(command, "pid") == 0)
             {
-
-                printf("\nExecuting built-in %s \n", command);
-
+                printf("\nExecuting built-in [%s] \n", command);
                 printf("%d\n", getpid());
             }
+
             /* check for built in "kill" command and implement */
             else if (strcmp(command, "kill") == 0)
             {
-                printf("\nExecuting built-in %s \n", command);
+                printf("\nExecuting built-in [%s] \n", command);
                 if (args[1] == NULL) {
                     printf("\n Specify signal to kill");
                 }
@@ -194,10 +196,11 @@ int sh(int argc, char **argv, char **envp)
                     printf("\nInvalid arguments");
                 }
             }
+
             /* check for built in "prompt" command and implement */
             else if (strcmp(command, "prompt") == 0)
             {
-            printf("\nExecuting built-in %s \n", command);
+            printf("\nExecuting built-in [%s] \n", command);
 
                 if (args[1] == NULL) {
                     printf("\nType your prefix: ");
@@ -214,11 +217,11 @@ int sh(int argc, char **argv, char **envp)
                     strcpy(prompt, args[1]);
                 }
             }
+
             /* check for built in "printenv" command and implement */
             else if (strcmp(command, "printenv") == 0)
             {
-
-                printf("\nExecuting built-in %s \n", command);
+                printf("\nExecuting built-in [%s] \n", command);
 
                 if (args[1]==NULL){
                     for (int i=0; environ[i] !=NULL; i++){
@@ -228,10 +231,11 @@ int sh(int argc, char **argv, char **envp)
                     printf("%s\n", getenv(args[1]));
                 }
             }
+
             /* check for built in "setenv" command and implement */
             else if (strcmp(command, "setenv") == 0)
             {
-                printf("\nExecuting built-in %s \n", command);
+                printf("\nExecuting built-in [%s] \n", command);
                 if (args[1] == NULL) {
                     printenv(environ);  // given no arguments acts like printenv
                 }
@@ -262,6 +266,7 @@ int sh(int argc, char **argv, char **envp)
                     fprintf(stderr, "setenv: Too many arguments.\n");
                 }
             }
+
             /* check for "*" "?" wild card */
             else if ((strchr(command, '*')!=NULL) || (strchr(command, '?')!=NULL)){ //checks for first occurence of wildcard characters
                 wordexp_t w; //pulled from wordexp.h library
@@ -275,7 +280,6 @@ int sh(int argc, char **argv, char **envp)
                 }
                 //wordfree(&w);
             }
-            /* don't need to check for Ctrl + D */
 
             /*  else  program to exec */
             else
