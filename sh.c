@@ -171,8 +171,6 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "kill" command and implement */
             else if (strcmp(command, "kill") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
-            
             }
 
             /* check for built in "prompt" command and implement */
@@ -212,9 +210,6 @@ int sh(int argc, char **argv, char **envp)
                 printf("\nExecuting built-in [%s]", command);
 
             }
-            else if (strcmp(command, "ls")==0){
-
-            }
             /* check for "*" "?" wild card */
             else if ((strchr(command, '*')!=NULL) || (strchr(command, '?')!=NULL)){ //checks for first occurence of wildcard characters
                 wordexp_t w; //pulled from wordexp.h library
@@ -233,7 +228,6 @@ int sh(int argc, char **argv, char **envp)
             /*  else  program to exec */
             else
             {
-                
                 //use command instead of p to call execve
                 //p container what we want to execute.  Free it after.
                 /* find it */
@@ -339,4 +333,4 @@ void printenv(char **envi){
     for(i=0; envi[i]!=NULL; i++){
         printf("%s\n",envi[i]);
     }
-}
+} /* printev() */

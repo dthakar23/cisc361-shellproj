@@ -47,4 +47,4 @@ void deletepath( struct pathelement** head){
       present = present->next;
       free(temp);
     }
-} /* end deletepath(struct pathelement** head) */
+} /* end deletepath */
