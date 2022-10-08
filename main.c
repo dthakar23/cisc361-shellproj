@@ -9,7 +9,8 @@ int main( int argc, char **argv, char **envp )
     /* put signal set up stuff here */
     signal(SIGINT, sig_handler);    // control C
     signal(SIGTSTP, sig_handler);   // control Z
-    signal(SIGTERM, sig_handler);   // control D
+    signal(SIGTERM, sig_handler);   // kill
+    // what is control D????
 
     return sh(argc, argv, envp);
 }

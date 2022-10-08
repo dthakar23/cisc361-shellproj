@@ -77,7 +77,7 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "exit" command and implement */
             if (strcmp(command, "exit") == 0)
             {
-                printf("\nExecuting built-in %s\n", command);
+                printf("\nExecuting built-in [%s]\n", command);
                 //free pathlist and pathlist->element
                 exit(0);
                 break;
@@ -86,6 +86,7 @@ int sh(int argc, char **argv, char **envp)
             else if (strcmp(command, "which") == 0)
             {
                 printf("\nExecuting built-in %s \n", command);
+
                 for (int a = 1; args[a] != NULL; a++)
                 {
                     commandpath = which(args[a], pathlist); // runs which function defined in this file
@@ -104,6 +105,7 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "cd" command and implement */ // how to do this one???
             else if (strcmp(command, "cd") == 0)
             {
+                printf("\nExecuting built-in [%s]", command);
                 if (args[1] == NULL) {
                     strcpy(owd, pwd);
                     strcpy(pwd, homedir);
@@ -113,10 +115,9 @@ int sh(int argc, char **argv, char **envp)
                     char *temp = pwd;
                     pwd = owd;
                     owd = pwd;
-                    //pwd = getcwd(NULL, PATH_MAX+1);
-
-                    //strcpy(pwd, owd);
-                    //strcpy(owd, temp);
+                    pwd = getcwd(NULL, PATH_MAX+1);
+                    strcpy(pwd, owd);
+                    strcpy(owd, temp);
                     chdir(pwd);
                 }
                 else if (args[1] != NULL && args[2] == NULL) {
@@ -133,13 +134,16 @@ int sh(int argc, char **argv, char **envp)
                 /* check for built in "pwd" command and implement */
             else if (strcmp(command, "pwd") == 0)
             {
-                printf("\nExecuting built-in %s \n", command);
+            printf("\nExecuting built-in %s \n", command);
+
                 printf("\npwd: %s", pwd);
             }
             /* check for built in "list" command and implement */
             else if (strcmp(command, "list") == 0) //check this
             {
+
                 printf("\nExecuting built-in %s \n", command);
+
                 if (args[1] == NULL)
                 { // 0 holds command
                     list(pwd);
@@ -165,7 +169,9 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "pid" command and implement */
             else if (strcmp(command, "pid") == 0)
             {
+
                 printf("\nExecuting built-in %s \n", command);
+
                 printf("%d\n", getpid());
             }
             /* check for built in "kill" command and implement */
@@ -194,7 +200,8 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "prompt" command and implement */
             else if (strcmp(command, "prompt") == 0)
             {
-                printf("\nExecuting built-in %s \n", command);
+            printf("\nExecuting built-in %s \n", command);
+
                 if (args[1] == NULL) {
                     printf("\nType your prefix: ");
                     if (fgets(pBuffer, PROMPTMAX, stdin) != NULL) {
@@ -213,7 +220,9 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "printenv" command and implement */
             else if (strcmp(command, "printenv") == 0)
             {
+
                 printf("\nExecuting built-in %s \n", command);
+
                 if (args[1]==NULL){
                     for (int i=0; environ[i] !=NULL; i++){
                         printf("%s\n", environ[i]);
@@ -225,6 +234,7 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "setenv" command and implement */
             else if (strcmp(command, "setenv") == 0)
             {
+
                 printf("\nExecuting built-in %s \n", command);
                 if (args[1] == NULL) {
                     printenv(environ);  // given no arguments acts like printenv
@@ -257,20 +267,9 @@ int sh(int argc, char **argv, char **envp)
                 }
 
             }
-        //    /*  /* check for "./ or /" absolute path and implement */ //use access(2) to check
-        //     else if ((strcmp(command, "/")==0) || (strcmp(command, "./"))==0 || (strcmp(command, "../"))){
-        //         if (access(command, X_OK) == -1)
-        //         {
-        //             printf("\nUnable to read command: %s", command);
-        //             perror("Error ");
-        //         }
-        //         else
-        //         {
-        //             printf("\nExecuted path %s\n", command);
-        //             //how to get path to print??? and run an executeable
-        //         }
-        //     } */
+            else if (strcmp(command, "ls")==0){
 
+            }
             /* check for "*" "?" wild card */
             else if ((strchr(command, '*')!=NULL) || (strchr(command, '?')!=NULL)){ //checks for first occurence of wildcard characters
                 wordexp_t w; //pulled from wordexp.h library
@@ -284,19 +283,46 @@ int sh(int argc, char **argv, char **envp)
                 }
                 //wordfree(&w);
             }
+            /* don't need to check for Ctrl + D */
 
             /*  else  program to exec */
             else
             {
+                
+                //use command instead of p to call execve
+                //p container what we want to execute.  Free it after.
                 /* find it */
                 /* do fork(), execve() and waitpid() */
-
+                status = 0; 
+                pid_t pid;
+                if ((pid = fork()) < 0)
+                {
+                    perror("\nError");
+                }
+                else if (pid == 0)
+                {
+                    /* check for "./ or /" absolute path and implement */
+                    char* p=which(command,pathlist);
+                    if (!p){
+                        p=calloc(MAXBUFFER,sizeof(char));
+                        strcpy(p,command);
+                    }    
+                    execve(p, args, environ);
+                    free(p);
+                    printf("Command Not Found\n");
+                    exit(-1);
+                }
+                else
+                {
+                    status=0;
+                    waitpid(pid, &status, 0);
+                    
+                }
                 /* else */
-                fprintf(stderr, "%s: Command not found.\n", args[0]);
+                
             }
 
         }
-        //return 0;
     }
     return 0;
 } /* sh() */
@@ -339,11 +365,10 @@ char *where(char *command, struct pathelement *pathlist)
 
         if (access(buffer, X_OK) == 0)
         {
-            int ln = strlen(buffer);
-            char *space = calloc(ln + 1, sizeof(char));
-            strncpy(space, buffer, ln);
+            //int ln = strlen(buffer);
+            //char *space = calloc(ln + 1, sizeof(char));
+            //strncpy(space, buffer, ln);
             printf("\n%s", buffer);
-            //return space;
         }
         pathlist = pathlist->next;
     }
@@ -354,19 +379,19 @@ void list(char *dir)
 {
     /* see man page for opendir() and readdir() and print out filenames for
     the directory passed */    
-    DIR* adir = opendir(dir);
-    struct dirent* afile;
-    if(adir){
-        while((afile = readdir(adir)) != NULL){
-            printf("%s\n", afile->d_name);
+    DIR* mydir = opendir(dir);
+    struct dirent* myfile;
+    if(mydir){
+        while((myfile = readdir(mydir)) != NULL){
+            printf("%s\n", myfile->d_name);
         }   
     }
-    closedir(adir);
+    closedir(mydir);
 } /* list() */
 
-void printenv(char **envp){
+void printenv(char **envi){
     int i=0;
-    for(i=0; envp[i]!=NULL; i++){
-        printf("%s\n",envp[i]);
+    for(i=0; envi[i]!=NULL; i++){
+        printf("%s\n",envi[i]);
     }
 }
