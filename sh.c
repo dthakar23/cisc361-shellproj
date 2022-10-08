@@ -265,12 +265,6 @@ int sh(int argc, char **argv, char **envp)
                     fprintf(stderr, "setenv: Too many arguments.\n");
                 }
             }
-
-            /* check for "*" "?" wild card */
-            else if ((strchr(command, '*')!=NULL) || (strchr(command, '?')!=NULL)){ //checks for first occurence of wildcard characters
-            
-            }
-
             /*  else  program to exec */
             else
             {
@@ -292,6 +286,7 @@ int sh(int argc, char **argv, char **envp)
                         p=calloc(MAXBUFFER,sizeof(char));
                         strcpy(p,command);
                     }    
+                    /* check for "*" "?" wild card */
                     execve(p, args, environ);
                     free(p);
                     printf("Command Not Found\n");
