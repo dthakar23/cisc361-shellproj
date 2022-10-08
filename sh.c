@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <wordexp.h>
 #include "sh.h"
 
 int sh(int argc, char **argv, char **envp)
@@ -28,8 +29,7 @@ int sh(int argc, char **argv, char **envp)
 
     uid = getuid();
     password_entry = getpwuid(uid);   /* get passwd info */
-    homedir = password_entry->pw_dir; /* Home directory to start
-                        out with*/
+    homedir = password_entry->pw_dir; /* Home directory to start out with*/
 
     if ((pwd = getcwd(NULL, PATH_MAX + 1)) == NULL)
     {
@@ -90,6 +90,7 @@ int sh(int argc, char **argv, char **envp)
                 {
                     commandpath = which(args[a], pathlist); // runs which function defined in this file
                     printf("\n%s", commandpath);
+                    free(commandpath);
                 }
             }
 
@@ -287,10 +288,24 @@ int sh(int argc, char **argv, char **envp)
                         strcpy(p,command);
                     }    
                     /* check for "*" "?" wild card */
-                    execve(p, args, environ);
-                    free(p);
-                    printf("Command Not Found\n");
-                    exit(-1);
+                    if (strchr(command, '*') != NULL || strchr(command, '?') != NULL) {
+                        printf("in the loop\n");
+                        wordexp_t w;
+                        char **wildcard;
+                        int index; 
+                        wordexp(command, &w, 0);
+                        wildcard = w.we_wordv;
+                        for (index = 0; index < w.we_wordc; index++) {
+                            printf("we made \n");
+                            printf("%s\n", wildcard[index]);
+                        }
+                    }
+                    else {
+                        execve(p, args, environ);
+                        free(p);
+                        printf("Command Not Found\n");
+                        exit(-1);
+                    }
                 }
                 else
                 {
