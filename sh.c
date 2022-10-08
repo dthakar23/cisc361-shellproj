@@ -85,7 +85,8 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "which" command and implement */
             else if (strcmp(command, "which") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
+                printf("\nExecuting built-in %s \n", command);
+
                 for (int a = 1; args[a] != NULL; a++)
                 {
                     commandpath = which(args[a], pathlist); // runs which function defined in this file
@@ -95,7 +96,7 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "where" command and implement */
             else if (strcmp(command, "where") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
+                printf("\nExecuting built-in %s \n", command);
                 for (int a = 1; args[a] != NULL; a++)
                 {
                     commandpath = where(args[a], pathlist);
@@ -133,13 +134,16 @@ int sh(int argc, char **argv, char **envp)
                 /* check for built in "pwd" command and implement */
             else if (strcmp(command, "pwd") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
+            printf("\nExecuting built-in %s \n", command);
+
                 printf("\npwd: %s", pwd);
             }
             /* check for built in "list" command and implement */
             else if (strcmp(command, "list") == 0) //check this
             {
-                printf("\nExecuting built-in [%s]", command);
+
+                printf("\nExecuting built-in %s \n", command);
+
                 if (args[1] == NULL)
                 { // 0 holds command
                     list(pwd);
@@ -165,20 +169,39 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "pid" command and implement */
             else if (strcmp(command, "pid") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
+
+                printf("\nExecuting built-in %s \n", command);
+
                 printf("%d\n", getpid());
             }
             /* check for built in "kill" command and implement */
             else if (strcmp(command, "kill") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
-            
+                printf("\nExecuting built-in %s \n", command);
+                if (args[1] == NULL) {
+                    printf("\n Specify signal to kill");
+                }
+                else if (args[2] == NULL) { // given just a pid
+                    int pid = atoi(args[1]);
+                    kill(pid, SIGTERM);
+                }
+                else if (args[3] == NULL) {
+                    int pid = atoi(args[2]);
+                    int sig = atoi(args[1]);
+                    sig = sig * -1;         // signal number with - in front 
+                    kill(pid, sig);
+                }
+                else {
+                    printf("\nInvalid arguments");
+                }
+
             }
 
             /* check for built in "prompt" command and implement */
             else if (strcmp(command, "prompt") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
+            printf("\nExecuting built-in %s \n", command);
+
                 if (args[1] == NULL) {
                     printf("\nType your prefix: ");
                     if (fgets(pBuffer, PROMPTMAX, stdin) != NULL) {
@@ -197,7 +220,9 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "printenv" command and implement */
             else if (strcmp(command, "printenv") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
+
+                printf("\nExecuting built-in %s \n", command);
+
                 if (args[1]==NULL){
                     for (int i=0; environ[i] !=NULL; i++){
                         printf("%s\n", environ[i]);
@@ -209,7 +234,37 @@ int sh(int argc, char **argv, char **envp)
             /* check for built in "setenv" command and implement */
             else if (strcmp(command, "setenv") == 0)
             {
-                printf("\nExecuting built-in [%s]", command);
+
+                printf("\nExecuting built-in %s \n", command);
+                if (args[1] == NULL) {
+                    printenv(environ);  // given no arguments acts like printenv
+                }
+                else if (args[2] == NULL) {
+                    // one argument set as an empty environment variable 
+                    if (strcmp(args[1],"PATH") == 0 || strcmp(args[1],"HOME") == 0) {
+                        printf("\nWARNING: Take special care when PATH and HOME are changed");
+                    }
+                    else if (setenv(args[1], "", 1) == -1) {
+                        perror("Error!");
+                    }
+                }
+                else if (args[3] == NULL) {
+                    if (setenv(args[1], args[2], 1) == -1) {
+                        perror("Error!");
+                    }
+                    else {
+                        if (strcmp(args[1], "PATH") == 0) {
+                            //deletepath(&pathlist);
+                            pathlist = NULL;
+                        }
+                        else if (strcmp(args[1], "HOME") == 0) {
+                            homedir = args[2];
+                        }
+                    }
+                }
+                else {
+                    fprintf(stderr, "setenv: Too many arguments.\n");
+                }
 
             }
             else if (strcmp(command, "ls")==0){
