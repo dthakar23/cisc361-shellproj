@@ -45,6 +45,7 @@ int sh(int argc, char **argv, char **envp)
     pathlist = get_path();
 
     while (go)
+    /* runs through a loop and checks for built in commands */
     {
         /* print your prompt */
         printf("\n%s [%s]> ", prompt, pwd);
@@ -77,7 +78,6 @@ int sh(int argc, char **argv, char **envp)
             if (strcmp(command, "exit") == 0)
             {
                 printf("\nExecuting built-in [%s]\n", command);
-                //free pathlist and pathlist->element
                 exit(0);
                 break;
             }
@@ -104,7 +104,7 @@ int sh(int argc, char **argv, char **envp)
                 }
             }
 
-            /* check for built in "cd" command and implement */ // how to do this one???
+            /* check for built in "cd" command and implement */
             else if (strcmp(command, "cd") == 0)
             {
                 printf("\nExecuting built-in [%s]", command);
@@ -142,11 +142,11 @@ int sh(int argc, char **argv, char **envp)
             }
 
             /* check for built in "list" command and implement */
-            else if (strcmp(command, "list") == 0) //check this
+            else if (strcmp(command, "list") == 0) 
             {
                 printf("\nExecuting built-in [%s] \n", command);
                 if (args[1] == NULL)
-                { // 0 holds command
+                { 
                     list(pwd);
                 }
                 else
@@ -184,7 +184,7 @@ int sh(int argc, char **argv, char **envp)
                 }
                 else if (args[2] == NULL) { // given just a pid
                     int pid = atoi(args[1]);
-                    kill(pid, SIGTERM);
+                    kill(pid, SIGTERM); //sends signal to kill
                 }
                 else if (args[3] == NULL) {
                     int pid = atoi(args[2]);
@@ -193,7 +193,7 @@ int sh(int argc, char **argv, char **envp)
                     kill(pid, sig);
                 }
                 else {
-                    printf("\nInvalid arguments");
+                    printf("\nInvalid arguments"); // prints this message if too many or too little arguments
                 }
             }
 
@@ -254,7 +254,6 @@ int sh(int argc, char **argv, char **envp)
                     }
                     else {
                         if (strcmp(args[1], "PATH") == 0) {
-                            //deletepath(&pathlist);
                             pathlist = NULL;
                         }
                         else if (strcmp(args[1], "HOME") == 0) {
@@ -269,8 +268,7 @@ int sh(int argc, char **argv, char **envp)
             /*  else  program to exec */
             else
             {
-                //use command instead of p to call execve
-                //p container what we want to execute.  Free it after.
+                /* else program executes non-built-in functions */
                 /* find it */
                 /* do fork(), execve() and waitpid() */
                 status = 0; 
@@ -358,9 +356,6 @@ char *where(char *command, struct pathelement *pathlist)
 
         if (access(buffer, X_OK) == 0)
         {
-            //int ln = strlen(buffer);
-            //char *space = calloc(ln + 1, sizeof(char));
-            //strncpy(space, buffer, ln);
             printf("\n%s", buffer);
         }
         pathlist = pathlist->next;
@@ -383,6 +378,7 @@ void list(char *dir)
 } /* list() */
 
 void printenv(char **envi){
+    /* helper function that prints the environment */
     int i=0;
     for(i=0; envi[i]!=NULL; i++){
         printf("%s\n",envi[i]);
