@@ -35,16 +35,3 @@ struct pathelement *get_path()
 
   return pathlist;
 } /* end get_path() */
-
-void deletepath( struct pathelement** head){
-    struct pathelement * present = *head;
-    struct pathelement * temp;
-    if(present != NULL){
-      free(present->element);
-    }
-    while(present){    
-      temp = present;
-      present = present->next;
-      free(temp);
-    }
-} /* end deletepath */

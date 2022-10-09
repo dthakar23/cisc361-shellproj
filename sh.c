@@ -13,6 +13,11 @@
 #include "sh.h"
 
 int sh(int argc, char **argv, char **envp)
+/**
+ * This method takes three arguments: one int, two chars. 
+ * Then the method goes into a while loop checking for built-in command conditions.
+ * The command is executed if there is a match.
+ **/
 {
     extern char** environ;
     char *prompt = calloc(PROMPTMAX, sizeof(char));
@@ -45,7 +50,7 @@ int sh(int argc, char **argv, char **envp)
     pathlist = get_path();
 
     while (go)
-    /* runs through a loop and checks for built in commands */
+    /* The big loop that says while go=1, method checks for built in commands and executes accordingly */
     {
         /* print your prompt */
         printf("\n%s [%s]> ", prompt, pwd);
@@ -286,6 +291,7 @@ int sh(int argc, char **argv, char **envp)
                         strcpy(p,command);
                     }    
                     /* check for "*" "?" wild card */
+                    /*
                     if (strchr(command, '*') != NULL || strchr(command, '?') != NULL) {
                         printf("in the loop\n");
                         wordexp_t w;
@@ -297,8 +303,9 @@ int sh(int argc, char **argv, char **envp)
                             printf("we made \n");
                             printf("%s\n", wildcard[index]);
                         }
-                    }
+                    } */
                     else {
+                        /* Command is not found */
                         execve(p, args, environ);
                         free(p);
                         printf("Command Not Found\n");
@@ -309,7 +316,6 @@ int sh(int argc, char **argv, char **envp)
                 {
                     status=0;
                     waitpid(pid, &status, 0);
-                    
                 }
                 /* else */
             }
@@ -345,7 +351,7 @@ char *which(char *command, struct pathelement *pathlist)
 
 char *where(char *command, struct pathelement *pathlist)
 {
-    /* similarly loop through finding all locations of command */
+    /* similarly loop through finding all locations of command (similar to which commmand) */
     char buffer[MAXBUFFER];
     int check;
     check = 0;
@@ -366,7 +372,8 @@ char *where(char *command, struct pathelement *pathlist)
 void list(char *dir)
 {
     /* see man page for opendir() and readdir() and print out filenames for
-    the directory passed */    
+    the directory passed */  
+    /* lists all the directories in a particular path destination */  
     DIR* mydir = opendir(dir);
     struct dirent* myfile;
     if(mydir){
@@ -378,7 +385,7 @@ void list(char *dir)
 } /* list() */
 
 void printenv(char **envi){
-    /* helper function that prints the environment */
+    /* helper method that prints the environment and takes in one char as an argument*/
     int i=0;
     for(i=0; envi[i]!=NULL; i++){
         printf("%s\n",envi[i]);

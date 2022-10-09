@@ -10,7 +10,7 @@ int main( int argc, char **argv, char **envp )
     signal(SIGINT, sig_handler);    // control C
     signal(SIGTSTP, sig_handler);   // control Z
     signal(SIGTERM, sig_handler);   // kill
-    return sh(argc, argv, envp);
+    return sh(argc, argv, envp); // runs sh method from sh.c
 }
 
 void sig_handler(int signal)
